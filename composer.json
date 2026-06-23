@@ -1,0 +1,39 @@
+{
+    "name": "mykolapodpriatov/polygon-kit",
+    "description": "Pure-PHP planar computational geometry: polygon area, centroid, orientation, convexity, point-in-polygon, convex intersection/union, simplify. No ext-geos, runs on any host.",
+    "type": "library",
+    "keywords": ["geometry", "computational-geometry", "polygon", "point-in-polygon", "convex-hull", "shoelace", "php", "no-geos"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mykola Podpriatov",
+            "email": "nsplotos@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "phpstan/phpstan": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "PolygonKit\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PolygonKit\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "stan": "phpstan analyse",
+        "check": ["@stan", "@test"]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}
