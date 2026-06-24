@@ -1,5 +1,10 @@
 # polygon-kit
 
+[![CI](https://github.com/mykolapodpriatov/polygon-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/mykolapodpriatov/polygon-kit/actions/workflows/ci.yml)
+[![Latest Version](https://img.shields.io/packagist/v/mykolapodpriatov/polygon-kit.svg)](https://packagist.org/packages/mykolapodpriatov/polygon-kit)
+[![PHP Version](https://img.shields.io/badge/php-8.2%2B-blue.svg)](composer.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 **Pure-PHP planar computational geometry — no `ext-geos`, no native extensions, runs on any host.**
 
 PHP has no good *pure-PHP* computational-geometry library: you either install the
