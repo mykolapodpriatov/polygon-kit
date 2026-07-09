@@ -6,6 +6,8 @@ to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-06-24
+
 ### Added
 - Immutable value objects: `Point`, `Segment`, `Polygon`, `BoundingBox`.
 - Measures: shoelace area (signed/abs), perimeter, area-weighted centroid,
