@@ -12,6 +12,7 @@ use PolygonKit\Measure\ShoelaceArea;
 use PolygonKit\Predicate\Orientation;
 use PolygonKit\Predicate\PointInPolygon;
 use PolygonKit\Predicate\RayCasting;
+use PolygonKit\Predicate\SimplicityTest;
 
 /**
  * An immutable simple polygon: an implicitly-closed ring of >= 3 vertices
@@ -98,6 +99,17 @@ final readonly class Polygon
     public function isConvex(): bool
     {
         return ConvexityTest::isConvex($this);
+    }
+
+    /**
+     * Does this ring avoid self-intersection? The constructor does not enforce
+     * this (it would be a breaking, O(n^2)-per-construction check), so callers
+     * that accept untrusted input can opt in here before relying on the
+     * area/centroid/orientation/containsPoint results.
+     */
+    public function isSimple(): bool
+    {
+        return SimplicityTest::isSimple($this);
     }
 
     public function boundingBox(): BoundingBox
