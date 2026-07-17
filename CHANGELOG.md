@@ -16,6 +16,10 @@ to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   self-intersection test that flags bowties, T-junctions and collinear
   doubling-back (rings the constructor accepts but downstream algorithms
   cannot reason about).
+- Immutable `Polygon` transforms returning new instances:
+  `withTranslation($dx, $dy)`, `withRotation($radians, ?$about)` and
+  `withScale($factor, ?$about)`. `withScale` rejects a zero/non-finite factor
+  and allows negative factors (a point-reflection through `$about`).
 - Operations: `ConvexHull` (monotone chain), `ConvexIntersection`
   (Sutherland–Hodgman), `ConvexUnion` (hull of union), `Simplify`
   (Ramer–Douglas–Peucker).

@@ -44,6 +44,7 @@ Requires PHP **8.2+**. No native extensions.
 |------|-----|
 | **Value objects** | `Point`, `Segment`, `Polygon`, `BoundingBox` — `final readonly`, validated at construction |
 | **Measures** | `Polygon::area()` / `signedArea()` (shoelace), `perimeter()`, `centroid()` (area-weighted), `isConvex()`, `isSimple()`, `boundingBox()` |
+| **Transforms** | `Polygon::withTranslation($dx, $dy)`, `withRotation($radians, ?$about)`, `withScale($factor, ?$about)` — immutable, each returns a new instance |
 | **Orientation** | `Polygon::orientation()` → `Orientation::{Clockwise,CounterClockwise,Degenerate}` |
 | **Point location** | `Polygon::containsPoint($p)` — two independent methods, `RayCasting` (default) and `WindingNumber`, that are tested to agree |
 | **Convex boolean ops** | `ConvexIntersection::of()` (Sutherland–Hodgman), `ConvexUnion::of()` (hull of union), `ConvexHull::of()` (monotone chain) |
