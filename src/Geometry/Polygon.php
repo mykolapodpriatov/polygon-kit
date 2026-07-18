@@ -9,6 +9,7 @@ use PolygonKit\Math\FloatMath;
 use PolygonKit\Measure\Centroid;
 use PolygonKit\Measure\ConvexityTest;
 use PolygonKit\Measure\Perimeter;
+use PolygonKit\Measure\PointToPolygonDistance;
 use PolygonKit\Measure\ShoelaceArea;
 use PolygonKit\Predicate\Orientation;
 use PolygonKit\Predicate\PointInPolygon;
@@ -116,6 +117,15 @@ final readonly class Polygon
     public function boundingBox(): BoundingBox
     {
         return BoundingBox::fromPoints(...$this->vertices);
+    }
+
+    /**
+     * Shortest distance from $point to this polygon: `0.0` when the point is
+     * inside or on the boundary, else the distance to the nearest edge.
+     */
+    public function distanceToPoint(Point $point): float
+    {
+        return PointToPolygonDistance::of($this, $point);
     }
 
     public function containsPoint(Point $point, ?PointInPolygon $method = null): bool
