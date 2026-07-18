@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PolygonKit\Geometry;
 
 use PolygonKit\Exception\InvalidPolygonException;
+use PolygonKit\Math\FloatMath;
 use PolygonKit\Measure\Centroid;
 use PolygonKit\Measure\ConvexityTest;
 use PolygonKit\Measure\Perimeter;
@@ -12,6 +13,7 @@ use PolygonKit\Measure\ShoelaceArea;
 use PolygonKit\Predicate\Orientation;
 use PolygonKit\Predicate\PointInPolygon;
 use PolygonKit\Predicate\RayCasting;
+use PolygonKit\Predicate\SimplicityTest;
 
 /**
  * An immutable simple polygon: an implicitly-closed ring of >= 3 vertices
@@ -100,6 +102,17 @@ final readonly class Polygon
         return ConvexityTest::isConvex($this);
     }
 
+    /**
+     * Does this ring avoid self-intersection? The constructor does not enforce
+     * this (it would be a breaking, O(n^2)-per-construction check), so callers
+     * that accept untrusted input can opt in here before relying on the
+     * area/centroid/orientation/containsPoint results.
+     */
+    public function isSimple(): bool
+    {
+        return SimplicityTest::isSimple($this);
+    }
+
     public function boundingBox(): BoundingBox
     {
         return BoundingBox::fromPoints(...$this->vertices);
@@ -123,5 +136,57 @@ final readonly class Polygon
     public function reversed(): self
     {
         return new self(array_reverse($this->vertices));
+    }
+
+    /**
+     * Translate every vertex by ($dx, $dy) (a new instance).
+     */
+    public function withTranslation(float $dx, float $dy): self
+    {
+        return new self(array_map(
+            static fn (Point $p): Point => $p->withTranslation($dx, $dy),
+            $this->vertices,
+        ));
+    }
+
+    /**
+     * Rotate every vertex by $radians (counter-clockwise) around $about,
+     * defaulting to the origin (a new instance).
+     */
+    public function withRotation(float $radians, ?Point $about = null): self
+    {
+        $about ??= new Point(0.0, 0.0);
+
+        return new self(array_map(
+            static fn (Point $p): Point => $p->withRotation($radians, $about),
+            $this->vertices,
+        ));
+    }
+
+    /**
+     * Scale every vertex by $factor about $about (default: the origin), a new
+     * instance. Negative factors are allowed: they point-reflect the ring
+     * through $about (equivalently, a 180-degree rotation, so the winding is
+     * preserved and the signed area scales by $factor^2). A zero or non-finite
+     * factor is rejected because scaling by 0 collapses the ring onto a point.
+     */
+    public function withScale(float $factor, ?Point $about = null): self
+    {
+        if (! is_finite($factor) || FloatMath::isZero($factor)) {
+            throw new InvalidPolygonException(sprintf(
+                'Scale factor must be a finite non-zero number, got %s.',
+                var_export($factor, true),
+            ));
+        }
+
+        $about ??= new Point(0.0, 0.0);
+
+        return new self(array_map(
+            static fn (Point $p): Point => new Point(
+                $about->x + ($p->x - $about->x) * $factor,
+                $about->y + ($p->y - $about->y) * $factor,
+            ),
+            $this->vertices,
+        ));
     }
 }

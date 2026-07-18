@@ -14,6 +14,14 @@ to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   convexity test.
 - Predicates: polygon `Orientation`, and two point-in-polygon strategies
   (`RayCasting`, `WindingNumber`) that are cross-checked against each other.
+- `Polygon::isSimple()` / `Predicate\SimplicityTest` — an opt-in O(n^2)
+  self-intersection test that flags bowties, T-junctions and collinear
+  doubling-back (rings the constructor accepts but downstream algorithms
+  cannot reason about).
+- Immutable `Polygon` transforms returning new instances:
+  `withTranslation($dx, $dy)`, `withRotation($radians, ?$about)` and
+  `withScale($factor, ?$about)`. `withScale` rejects a zero/non-finite factor
+  and allows negative factors (a point-reflection through `$about`).
 - Operations: `ConvexHull` (monotone chain), `ConvexIntersection`
   (Sutherland–Hodgman), `ConvexUnion` (hull of union), `Simplify`
   (Ramer–Douglas–Peucker).

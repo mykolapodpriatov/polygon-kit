@@ -46,4 +46,13 @@ final class PolygonFixtures
     {
         return Polygon::fromArray([[0, 0], [2, 0], [3, 2], [1, 3], [-1, 2]]);
     }
+
+    /**
+     * Self-intersecting "bowtie" — constructs fine (>= 3 vertices, no
+     * consecutive duplicates) yet the two diagonals cross, so it is NOT simple.
+     */
+    public static function bowtie(): Polygon
+    {
+        return Polygon::fromArray([[0, 0], [2, 2], [2, 0], [0, 2]]);
+    }
 }

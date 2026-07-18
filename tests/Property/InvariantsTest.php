@@ -25,14 +25,42 @@ final class InvariantsTest extends TestCase
 
             $angle = (mt_rand() / mt_getrandmax()) * 2 * M_PI;
             $about = new Point(3.0, -2.0);
-            $moved = new Polygon(array_map(
-                static fn (Point $p): Point => $p
-                    ->withRotation($angle, $about)
-                    ->withTranslation(7.5, -4.25),
-                $polygon->vertices,
-            ));
+            $moved = $polygon
+                ->withRotation($angle, $about)
+                ->withTranslation(7.5, -4.25);
 
             self::assertEqualsWithDelta($area, $moved->area(), 1e-6);
+        }
+    }
+
+    public function testScaleMultipliesAreaByFactorSquaredAndPerimeterByAbsFactor(): void
+    {
+        mt_srand(20260717);
+
+        $factors = [0.25, 0.5, 2.0, 3.5, -1.0, -2.5];
+
+        for ($trial = 0; $trial < 25; $trial++) {
+            $polygon = $this->randomConvexPolygon();
+            $area = $polygon->area();
+            $perimeter = $polygon->perimeter();
+
+            foreach ($factors as $factor) {
+                $scaled = $polygon->withScale($factor);
+
+                $expectedArea = $area * $factor * $factor;
+                $expectedPerimeter = $perimeter * abs($factor);
+
+                self::assertEqualsWithDelta(
+                    $expectedArea,
+                    $scaled->area(),
+                    abs($expectedArea) * 1e-9 + 1e-9,
+                );
+                self::assertEqualsWithDelta(
+                    $expectedPerimeter,
+                    $scaled->perimeter(),
+                    abs($expectedPerimeter) * 1e-9 + 1e-9,
+                );
+            }
         }
     }
 

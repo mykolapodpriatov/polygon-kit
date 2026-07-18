@@ -43,7 +43,8 @@ Requires PHP **8.2+**. No native extensions.
 | Area | API |
 |------|-----|
 | **Value objects** | `Point`, `Segment`, `Polygon`, `BoundingBox` — `final readonly`, validated at construction |
-| **Measures** | `Polygon::area()` / `signedArea()` (shoelace), `perimeter()`, `centroid()` (area-weighted), `isConvex()`, `boundingBox()` |
+| **Measures** | `Polygon::area()` / `signedArea()` (shoelace), `perimeter()`, `centroid()` (area-weighted), `isConvex()`, `isSimple()`, `boundingBox()` |
+| **Transforms** | `Polygon::withTranslation($dx, $dy)`, `withRotation($radians, ?$about)`, `withScale($factor, ?$about)` — immutable, each returns a new instance |
 | **Orientation** | `Polygon::orientation()` → `Orientation::{Clockwise,CounterClockwise,Degenerate}` |
 | **Point location** | `Polygon::containsPoint($p)` — two independent methods, `RayCasting` (default) and `WindingNumber`, that are tested to agree |
 | **Convex boolean ops** | `ConvexIntersection::of()` (Sutherland–Hodgman), `ConvexUnion::of()` (hull of union), `ConvexHull::of()` (monotone chain) |
@@ -62,6 +63,14 @@ Requires PHP **8.2+**. No native extensions.
 - **Immutable everything.** Every type is `final readonly`; transforms return new
   instances. An invalid polygon (<3 vertices, NaN/INF coords, consecutive
   duplicates) is unrepresentable — it throws at construction.
+- **Simplicity is a predicate, not a constructor check.** Construction guarantees
+  a well-formed *ring* (>= 3 finite vertices, no consecutive duplicates) but not
+  a *simple* one: a self-intersecting bowtie still constructs, and then
+  area/centroid/orientation/`containsPoint` return silent nonsense. Enforcing
+  non-self-intersection in the constructor would be a breaking change and cost
+  O(n^2) on every construction (most call sites already hold trusted rings), so
+  it lives as the opt-in `Polygon::isSimple()` (`Predicate\SimplicityTest`)
+  instead — validate untrusted input there before trusting the measures.
 - **Two point-in-polygon methods on purpose.** Ray-casting and winding-number are
   cross-checked over a grid in the test-suite, so each validates the other.
 
