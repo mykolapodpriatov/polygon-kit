@@ -13,6 +13,7 @@ use PolygonKit\Measure\PointToPolygonDistance;
 use PolygonKit\Measure\ShoelaceArea;
 use PolygonKit\Predicate\Orientation;
 use PolygonKit\Predicate\PointInPolygon;
+use PolygonKit\Predicate\PolygonOverlap;
 use PolygonKit\Predicate\RayCasting;
 use PolygonKit\Predicate\SimplicityTest;
 
@@ -138,6 +139,18 @@ final readonly class Polygon
         }
 
         return $method->contains($this, $point);
+    }
+
+    /**
+     * Do this polygon and $other overlap (touching counts)? Works for
+     * convex and non-convex simple rings alike, unlike
+     * {@see \PolygonKit\Operation\ConvexIntersection}, which requires both
+     * inputs to be convex and builds the intersection geometry rather than
+     * just answering yes/no.
+     */
+    public function intersects(self $other): bool
+    {
+        return PolygonOverlap::intersects($this, $other);
     }
 
     /**
