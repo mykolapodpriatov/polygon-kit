@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PolygonKit\Predicate;
 
+use PolygonKit\Exception\GeometryException;
 use PolygonKit\Geometry\Polygon;
 use PolygonKit\Geometry\Segment;
 
@@ -28,14 +29,21 @@ use PolygonKit\Geometry\Segment;
  *     edge-on-edge touches that {@see Segment::intersectionWith()} misses
  *     (it returns null for collinear pairs).
  *
- * Self-intersecting (non-simple) input is undefined behavior, the same
- * posture {@see \PolygonKit\Operation\EarClipping} and
- * {@see \PolygonKit\Operation\ConvexIntersection} take toward non-simple rings.
+ * Self-intersecting (non-simple) input throws {@see GeometryException}, the
+ * same posture {@see \PolygonKit\Operation\EarClipping} and
+ * {@see \PolygonKit\Operation\ConvexIntersection} take toward rings they
+ * cannot reason about.
  */
 final class PolygonOverlap
 {
     public static function intersects(Polygon $a, Polygon $b): bool
     {
+        if (! SimplicityTest::isSimple($a) || ! SimplicityTest::isSimple($b)) {
+            throw new GeometryException(
+                'PolygonOverlap requires both polygons to be simple (non-self-intersecting).',
+            );
+        }
+
         if (! $a->boundingBox()->intersects($b->boundingBox())) {
             return false;
         }
