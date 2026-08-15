@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PolygonKit\Exception\InvalidPolygonException;
 use PolygonKit\Geometry\Point;
 use PolygonKit\Geometry\Polygon;
+use PolygonKit\Math\FloatMath;
 use PolygonKit\Tests\Fixtures\PolygonFixtures;
 
 final class PolygonTest extends TestCase
@@ -28,6 +29,39 @@ final class PolygonTest extends TestCase
     {
         $polygon = Polygon::fromPoints(new Point(0, 0), new Point(1, 0), new Point(0, 1));
         self::assertSame(3, $polygon->vertexCount());
+    }
+
+    public function testRegularSquareIsConvexSimpleAndCentered(): void
+    {
+        $square = Polygon::regular(4, 1.0);
+
+        self::assertSame(4, $square->vertexCount());
+        self::assertTrue($square->isConvex());
+        self::assertTrue($square->isSimple());
+
+        $centroid = $square->centroid();
+        self::assertEqualsWithDelta(0.0, $centroid->x, FloatMath::EPSILON);
+        self::assertEqualsWithDelta(0.0, $centroid->y, FloatMath::EPSILON);
+
+        foreach ($square->vertices as $vertex) {
+            self::assertEqualsWithDelta(1.0, hypot($vertex->x, $vertex->y), FloatMath::EPSILON);
+        }
+
+        // startAngle 0 = +X, then CCW.
+        self::assertEqualsWithDelta(1.0, $square->vertices[0]->x, FloatMath::EPSILON);
+        self::assertEqualsWithDelta(0.0, $square->vertices[0]->y, FloatMath::EPSILON);
+    }
+
+    public function testRegularRejectsFewerThanThreeSides(): void
+    {
+        $this->expectException(InvalidPolygonException::class);
+        Polygon::regular(2, 1.0);
+    }
+
+    public function testRegularRejectsNonPositiveRadius(): void
+    {
+        $this->expectException(InvalidPolygonException::class);
+        Polygon::regular(4, 0.0);
     }
 
     public function testReversedFlipsSignedArea(): void

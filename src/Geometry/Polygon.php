@@ -70,6 +70,40 @@ final readonly class Polygon
         return new self(array_values($points));
     }
 
+    /**
+     * Regular n-gon of the given circumradius, centered at $center (default:
+     * origin). Vertices run counter-clockwise starting at $startAngle
+     * (radians; 0 = +X).
+     */
+    public static function regular(int $n, float $radius, ?Point $center = null, float $startAngle = 0.0): self
+    {
+        if ($n < 3) {
+            throw new InvalidPolygonException(
+                sprintf('A regular polygon needs at least 3 vertices, got %d.', $n),
+            );
+        }
+
+        if (! is_finite($radius) || $radius <= 0.0) {
+            throw new InvalidPolygonException(sprintf(
+                'Regular polygon radius must be a finite positive number, got %s.',
+                var_export($radius, true),
+            ));
+        }
+
+        $center ??= new Point(0.0, 0.0);
+        $step = 2.0 * M_PI / $n;
+        $vertices = [];
+        for ($i = 0; $i < $n; $i++) {
+            $angle = $startAngle + $i * $step;
+            $vertices[] = new Point(
+                $center->x + $radius * cos($angle),
+                $center->y + $radius * sin($angle),
+            );
+        }
+
+        return new self($vertices);
+    }
+
     public function vertexCount(): int
     {
         return count($this->vertices);
