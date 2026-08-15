@@ -7,6 +7,7 @@ namespace PolygonKit\Geometry;
 use PolygonKit\Exception\InvalidPolygonException;
 use PolygonKit\Math\FloatMath;
 use PolygonKit\Measure\Centroid;
+use PolygonKit\Measure\ClosestPoint;
 use PolygonKit\Measure\ConvexityTest;
 use PolygonKit\Measure\Perimeter;
 use PolygonKit\Measure\PointToPolygonDistance;
@@ -127,6 +128,15 @@ final readonly class Polygon
     public function distanceToPoint(Point $point): float
     {
         return PointToPolygonDistance::of($this, $point);
+    }
+
+    /**
+     * Nearest point on this ring to $point: $point itself when it is inside or
+     * on the boundary, otherwise the projection onto the nearest edge.
+     */
+    public function closestPoint(Point $point): Point
+    {
+        return ClosestPoint::of($this, $point);
     }
 
     public function containsPoint(Point $point, ?PointInPolygon $method = null): bool

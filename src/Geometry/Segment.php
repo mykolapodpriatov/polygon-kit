@@ -24,29 +24,34 @@ final readonly class Segment
     }
 
     /**
-     * Shortest distance from $point to this (closed) segment.
+     * Nearest point on this (closed) segment to $point.
      *
-     * Projects $point onto the segment's supporting line, clamps the projection
-     * parameter to `[0, 1]` so the nearest point stays on the segment, then
-     * returns the distance to it. A zero-length segment degenerates to the
-     * distance to its (shared) endpoint.
+     * Projects $point onto the segment's supporting line and clamps the
+     * projection parameter `t` to `[0, 1]` so the result stays on the segment.
+     * A zero-length segment degenerates to its (shared) endpoint.
      */
-    public function distanceToPoint(Point $point): float
+    public function closestPoint(Point $point): Point
     {
         $dx = $this->b->x - $this->a->x;
         $dy = $this->b->y - $this->a->y;
         $lengthSquared = $dx * $dx + $dy * $dy;
 
         if (FloatMath::isZero($lengthSquared)) {
-            return $point->distanceTo($this->a);
+            return $this->a;
         }
 
         $t = (($point->x - $this->a->x) * $dx + ($point->y - $this->a->y) * $dy) / $lengthSquared;
         $t = max(0.0, min(1.0, $t));
 
-        $closest = new Point($this->a->x + $t * $dx, $this->a->y + $t * $dy);
+        return new Point($this->a->x + $t * $dx, $this->a->y + $t * $dy);
+    }
 
-        return $point->distanceTo($closest);
+    /**
+     * Shortest distance from $point to this (closed) segment.
+     */
+    public function distanceToPoint(Point $point): float
+    {
+        return $point->distanceTo($this->closestPoint($point));
     }
 
     /**
