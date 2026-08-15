@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PolygonKit\Tests\Unit\Predicate;
 
 use PHPUnit\Framework\TestCase;
+use PolygonKit\Exception\GeometryException;
 use PolygonKit\Geometry\Polygon;
 use PolygonKit\Predicate\PolygonOverlap;
 use PolygonKit\Tests\Fixtures\PolygonFixtures;
@@ -99,5 +100,33 @@ final class PolygonOverlapTest extends TestCase
 
         self::assertTrue($a->intersects($b));
         self::assertFalse($a->intersects($c));
+    }
+
+    public function testSelfIntersectingFirstArgumentThrows(): void
+    {
+        $this->expectException(GeometryException::class);
+
+        PolygonOverlap::intersects(PolygonFixtures::bowtie(), PolygonFixtures::unitSquare());
+    }
+
+    public function testSelfIntersectingSecondArgumentThrows(): void
+    {
+        $this->expectException(GeometryException::class);
+
+        PolygonOverlap::intersects(PolygonFixtures::unitSquare(), PolygonFixtures::bowtie());
+    }
+
+    public function testPolygonIntersectsThrowsWhenSelfIsNonSimple(): void
+    {
+        $this->expectException(GeometryException::class);
+
+        PolygonFixtures::bowtie()->intersects(PolygonFixtures::unitSquare());
+    }
+
+    public function testPolygonIntersectsThrowsWhenOtherIsNonSimple(): void
+    {
+        $this->expectException(GeometryException::class);
+
+        PolygonFixtures::unitSquare()->intersects(PolygonFixtures::bowtie());
     }
 }
