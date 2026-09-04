@@ -6,6 +6,14 @@ to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `Operation\ConvexDecomposition::of()`: Hertel-Mehlhorn decomposition of a
+  simple polygon into convex pieces. It starts from the ear-clipping
+  triangulation and deletes a diagonal whenever the merged piece stays convex,
+  so an L-shape comes back as two pieces instead of four triangles. This is
+  what lets the convex-only operations be applied piecewise to any simple
+  polygon: decompose, operate, combine.
+
 ## [1.0.0] - 2026-06-24
 
 ### Added
