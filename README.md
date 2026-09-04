@@ -52,6 +52,7 @@ Requires PHP **8.2+**. No native extensions.
 | **Overlap** | `Polygon::intersects($other)` (`Predicate\PolygonOverlap`), a boolean test valid for any two simple polygons |
 | **Convex boolean ops** | `ConvexIntersection::of()` (Sutherland-Hodgman), `ConvexUnion::of()` (hull of union), `ConvexHull::of()` (monotone chain) |
 | **Triangulation** | `EarClipping::triangulate()`, a simple polygon into exactly `n - 2` CCW triangles |
+| **Convex decomposition** | `ConvexDecomposition::of()` (Hertel-Mehlhorn), a simple polygon into convex pieces |
 | **Enclosing circle** | `MinimumBoundingCircle::of()` (Welzl), returning a `Circle` |
 | **Simplification** | `Simplify::douglasPeucker($polygon, $epsilon)` |
 | **Segments** | `Segment::length()`, `closestPoint()`, `distanceToPoint()`, `intersectionWith()`, `contains()` |
@@ -72,6 +73,13 @@ Requires PHP **8.2+**. No native extensions.
   into exactly `n - 2` counter-clockwise triangles in O(n^2), guarded by
   `SimplicityTest`: a self-intersecting ring has no meaningful triangulation and
   throws a `GeometryException` instead of returning nonsense.
+- **Convex-only does not mean convex-input-only.** `ConvexDecomposition::of()`
+  turns any simple polygon into convex pieces that tile it exactly, so the
+  convex operations can be applied piecewise: decompose, operate, combine. It
+  builds on the ear-clipping triangulation and then deletes diagonals whose
+  removal leaves a convex piece (Hertel-Mehlhorn), which is why an L-shape
+  comes back as two pieces rather than four triangles. The bound is at most
+  four times the minimum number of convex pieces.
 - **Float robustness, not exact predicates.** All comparisons route through a
   centralised tolerance (`Math\FloatMath`, `EPSILON = 1e-9`) so near-degenerate
   inputs classify deterministically. There is no Shewchuk adaptive-precision /
