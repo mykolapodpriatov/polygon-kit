@@ -50,6 +50,7 @@ Requires PHP **8.2+**. No native extensions.
 | **Point location** | `Polygon::containsPoint($p)`, with two independent implementations, `RayCasting` (default) and `WindingNumber`, tested to agree |
 | **Point queries** | `Polygon::distanceToPoint($p)` (`Measure\PointToPolygonDistance`), `closestPoint($p)` (`Measure\ClosestPoint`) |
 | **Overlap** | `Polygon::intersects($other)` (`Predicate\PolygonOverlap`), a boolean test valid for any two simple polygons |
+| **Containment** | `Polygon::contains($other)` (`Predicate\PolygonContainment`), a directional boolean test: is `$other` fully inside `$this`, boundary touch allowed |
 | **Convex boolean ops** | `ConvexIntersection::of()` (Sutherland-Hodgman), `ConvexUnion::of()` (hull of union), `ConvexHull::of()` (monotone chain) |
 | **Triangulation** | `EarClipping::triangulate()`, a simple polygon into exactly `n - 2` CCW triangles |
 | **Convex decomposition** | `ConvexDecomposition::of()` (Hertel-Mehlhorn), a simple polygon into convex pieces |
@@ -64,11 +65,11 @@ Requires PHP **8.2+**. No native extensions.
   polygons are convex (asserted at the boundary). `ConvexUnion` returns the convex
   **hull of the union**: exact when the true union is convex, otherwise a superset.
   General non-convex clipping (Weiler-Atherton) is future work.
-- **Overlap is the exception.** `Polygon::intersects()` is a boolean test, not a
-  clip, and it is valid for **any two simple polygons**, convex or not. It is the
-  one operation the convex-only restriction does not apply to. It rejects a
-  self-intersecting ring rather than answering for it, the same way
-  `EarClipping` does.
+- **Overlap and containment are the exception.** `Polygon::intersects()` and
+  `Polygon::contains()` are boolean tests, not a clip, and both are valid for
+  **any two simple polygons**, convex or not. They are the operations the
+  convex-only restriction does not apply to. Both reject a self-intersecting
+  ring rather than answering for it, the same way `EarClipping` does.
 - **Triangulation ships.** `EarClipping::triangulate()` turns a simple polygon
   into exactly `n - 2` counter-clockwise triangles in O(n^2), guarded by
   `SimplicityTest`: a self-intersecting ring has no meaningful triangulation and
