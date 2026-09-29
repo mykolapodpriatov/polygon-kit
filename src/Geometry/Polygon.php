@@ -14,6 +14,7 @@ use PolygonKit\Measure\PointToPolygonDistance;
 use PolygonKit\Measure\ShoelaceArea;
 use PolygonKit\Predicate\Orientation;
 use PolygonKit\Predicate\PointInPolygon;
+use PolygonKit\Predicate\PolygonContainment;
 use PolygonKit\Predicate\PolygonOverlap;
 use PolygonKit\Predicate\RayCasting;
 use PolygonKit\Predicate\SimplicityTest;
@@ -195,6 +196,16 @@ final readonly class Polygon
     public function intersects(self $other): bool
     {
         return PolygonOverlap::intersects($this, $other);
+    }
+
+    /**
+     * Does this polygon fully contain $other (boundary touch allowed)?
+     * Directional, unlike {@see intersects()}: every point of $other, interior
+     * and boundary, must lie inside or on the boundary of $this.
+     */
+    public function contains(self $other): bool
+    {
+        return PolygonContainment::contains($this, $other);
     }
 
     /**
