@@ -29,4 +29,19 @@ final class ConvexityTestTest extends TestCase
         $square = Polygon::fromArray([[0, 0], [1, 0], [2, 0], [2, 2], [0, 2]]);
         self::assertTrue(ConvexityTest::isConvex($square));
     }
+
+    public function testSelfIntersectingStarIsNotConvex(): void
+    {
+        // Regular pentagram {5/2}. Every turn has the same sign, and the
+        // edges still cross, so the ring is not a convex set.
+        $points = [];
+        foreach ([0, 2, 4, 1, 3] as $k) {
+            $angle = -M_PI / 2 + (2 * M_PI * $k / 5);
+            $points[] = [cos($angle), sin($angle)];
+        }
+        $star = Polygon::fromArray($points);
+
+        self::assertFalse($star->isSimple());
+        self::assertFalse(ConvexityTest::isConvex($star));
+    }
 }
