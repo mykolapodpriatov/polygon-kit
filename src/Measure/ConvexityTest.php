@@ -6,12 +6,15 @@ namespace PolygonKit\Measure;
 
 use PolygonKit\Geometry\Polygon;
 use PolygonKit\Math\Cross;
+use PolygonKit\Predicate\SimplicityTest;
 
 /**
  * Convexity test via cross-product sign consistency.
  *
  * A simple polygon is convex iff every non-zero turn (cross product of
  * consecutive edges) shares the same sign. Collinear vertices are tolerated.
+ * A self-intersecting ring is not convex, even when every turn has one sign
+ * (a regular pentagram).
  *
  * Ported from the KhPI archive: "Определение выпуклый многоугольник или нет.htm"
  * and `ario::Convex(mypoints&, int n)` in `Diplom 7.0/A1.h`.
@@ -23,6 +26,9 @@ final class ConvexityTest
         $vertices = $polygon->vertices;
         $n = count($vertices);
         if ($n < 3) {
+            return false;
+        }
+        if (!SimplicityTest::isSimple($polygon)) {
             return false;
         }
 
